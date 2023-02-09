@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: c8ed4c09-f1e2-40e9-82c2-27f186fcab42
+      url: 'https://quartopub.com/sites/barnesparker/tidytricks'
