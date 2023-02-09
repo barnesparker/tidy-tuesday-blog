@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.269">
+<meta name="generator" content="quarto-1.2.335">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -204,7 +204,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 <p><img src="big_tech.jpg" class="img-fluid"></p>
-<p>Welcome to my very first #tidytuesday blog post! In this post I will showcase the new <a href="https://www.tidyverse.org/blog/2023/02/dplyr-1-1-0-per-operation-grouping/">per-operation grouping</a> functionality released in dplyr 1.1.0. I’ll also combine it with one of my favorite lesser known dplyr tricks.</p>
+<p>Welcome to my very first #tidytuesday blog post! In this post I will showcase the new <a href="https://www.tidyverse.org/blog/2023/02/dplyr-1-1-0-per-operation-grouping/">per-operation grouping</a> functionality released in dplyr 1.1.0. I also want to demonstrate one of my favorite lesser-known dplyr tricks!</p>
 <p>I’ll use <a href="https://github.com/rfordatascience/tidytuesday/blob/master/data/2023/2023-02-07/readme.md">this week’s tidytuesday data set</a> consisting of daily big tech stock prices from 2010-2022 to demonstrate.</p>
 <p>First, let’s download the data:</p>
 <div class="cell">
@@ -250,7 +250,7 @@ $ volume       &lt;dbl&gt; 493729600, 601904800, 552160000, 477131200, 447610800
 14 Tesla, Inc.                                 TSLA          3148</code></pre>
 </div>
 </div>
-<p>Meta and Tesla did not go public until after Jan 2010, and so they have a few less observations</p>
+<p>Note: Meta and Tesla did not go public until after Jan 2010, and so they have a few less observations</p>
 <p>Now let’s visualize the stocks as simple faceted line charts</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>big_tech_stock_prices <span class="sc">|&gt;</span></span>
@@ -262,7 +262,7 @@ $ volume       &lt;dbl&gt; 493729600, 601904800, 552160000, 477131200, 447610800
 <p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>With the exception of IBM, every stock peaks around the end of 2021, and then significantly drops thereafter.</p>
+<p>With the exception of IBM, each stock peaks around the end of 2021, and then declines thereafter.</p>
 <p>Let’s zoom in on the peaks by plotting them on the same axes. Here I will use the new dplyr functionality to find the maximum <code>adj_close</code> by <code>stock_symbol</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>big_tech_stock_prices <span class="sc">|&gt;</span> </span>
@@ -278,48 +278,21 @@ $ volume       &lt;dbl&gt; 493729600, 601904800, 552160000, 477131200, 447610800
 <p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>What sort of decline do these stocks see in the weeks and months following their peak? How do they compare to each other?</p>
-<p>To answer this question, we will need to filter each stock to include only the data following its peak. This may seem trivial at first, but it’s a bit trickier than you think. Since each stock has a different date at which is hits its peak price, you can’t simply filter by a single date.</p>
-<p>The first approach might be to modify our original <code>slice_max</code> but increase <code>n</code> to include more data, but that’s not going to work because the top <code>n</code> prices don’t necessarily follow the maximum. In fact, many of them are going to appear prior to the max.</p>
+<p>How steep of a decline do these stocks see in the weeks and months following their peak? How do they compare to each other?</p>
+<p>To answer this question, we will need to filter each stock to include only the data following its peak. This may seem trivial at first, but it’s a bit trickier than you think. Since each stock has a different date at which is hits its peak price, we can’t simply filter by a single date.</p>
+<p>One approach would be to save the dates at which the stocks hit their maximum prices into a separate tibble, join that tibble with the original, and finally, filter the dates.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>big_tech_stock_prices <span class="sc">|&gt;</span> </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># doesn't take date into account</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(adj_close, <span class="at">n =</span> <span class="dv">3</span>, <span class="at">by =</span> stock_symbol) <span class="sc">|&gt;</span> </span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    date, <span class="at">price_rank =</span> <span class="fu">row_number</span>(adj_close), </span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.by =</span> stock_symbol, </span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">.keep =</span> <span class="st">"used"</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 42 × 4
-   stock_symbol date       adj_close price_rank
-   &lt;chr&gt;        &lt;date&gt;         &lt;dbl&gt;      &lt;int&gt;
- 1 AAPL         2022-01-03      181.          3
- 2 AAPL         2021-12-27      179.          2
- 3 AAPL         2022-01-04      179.          1
- 4 ADBE         2021-11-19      688.          3
- 5 ADBE         2021-11-29      687.          2
- 6 ADBE         2021-11-04      674.          1
- 7 AMZN         2021-07-08      187.          3
- 8 AMZN         2021-07-09      186.          2
- 9 AMZN         2021-07-12      186.          1
-10 CRM          2021-11-08      310.          3
-# … with 32 more rows</code></pre>
-</div>
-</div>
-<p>Perhaps we might save the dates of the maximum prices into a separate tibble, join that tibble with the original, and finally filter the dates. Now we’re getting somewhere.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>peak_price_dates <span class="ot">&lt;-</span> </span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  big_tech_stock_prices <span class="sc">|&gt;</span> </span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(adj_close, <span class="at">by =</span> stock_symbol) <span class="sc">|&gt;</span> </span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(stock_symbol, <span class="at">peak_date =</span> date, <span class="at">peak_price =</span> adj_close)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>big_tech_stock_prices <span class="sc">|&gt;</span> </span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(peak_price_dates) <span class="sc">|&gt;</span> </span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(date <span class="sc">&gt;=</span> peak_date) <span class="sc">|&gt;</span> </span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for demonstration purposes</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_min</span>(date, <span class="at">n =</span> <span class="dv">3</span>, <span class="at">by =</span> stock_symbol) <span class="sc">|&gt;</span> </span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(stock_symbol, date, adj_close)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>peak_price_dates <span class="ot">&lt;-</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  big_tech_stock_prices <span class="sc">|&gt;</span> </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(adj_close, <span class="at">by =</span> stock_symbol) <span class="sc">|&gt;</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(stock_symbol, <span class="at">peak_date =</span> date, <span class="at">peak_price =</span> adj_close)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>big_tech_stock_prices <span class="sc">|&gt;</span> </span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(peak_price_dates) <span class="sc">|&gt;</span> </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(date <span class="sc">&gt;=</span> peak_date) <span class="sc">|&gt;</span> </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for demonstration purposes</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_min</span>(date, <span class="at">n =</span> <span class="dv">3</span>, <span class="at">by =</span> stock_symbol) <span class="sc">|&gt;</span> </span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(stock_symbol, date, adj_close)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 42 × 3
    stock_symbol date       adj_close
@@ -337,18 +310,17 @@ $ volume       &lt;dbl&gt; 493729600, 601904800, 552160000, 477131200, 447610800
 # … with 32 more rows</code></pre>
 </div>
 </div>
-<p>This solution works, but in my opinion, is somewhat clunky because it requires extra steps and a separate tibble. How might we accomplish this without breaking the dplyr chain?</p>
-<p>Believe it or not, the solution comes from a base-R concept, called <em>subsetting</em>.</p>
-<p>Subsetting is used to filter a vector or dataframe by some condition, much like <code>dplyr::filter</code>. Instead of a function call, we use square brackets (<code>[]</code>).</p>
+<p>This solution works, but there’s a better (in my opinion) way that doesn’t require a separate tibble. The method is derived from a base-R concept called <em>subsetting</em>.</p>
+<p>Subsetting can be used to filter a vector or dataframe by some condition, much like <code>dplyr::filter</code>. Instead of a function call, we use square brackets (<code>[]</code>).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>vec <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">20</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># subset to get even numbers</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>vec[vec <span class="sc">%%</span> <span class="dv">2</span> <span class="sc">==</span> <span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>vec <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">20</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># subset to get even numbers</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>vec[vec <span class="sc">%%</span> <span class="dv">2</span> <span class="sc">==</span> <span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1]  0  2  4  6  8 10 12 14 16 18 20</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># filter to get rows with mpg &gt; 18</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>mtcars[mtcars<span class="sc">$</span>mpg <span class="sc">&gt;</span> <span class="dv">21</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># subset to get rows with mpg &gt; 18</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>mtcars[mtcars<span class="sc">$</span>mpg <span class="sc">&gt;</span> <span class="dv">21</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                mpg cyl  disp  hp drat    wt  qsec vs am gear carb
 Datsun 710     22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1
@@ -365,48 +337,25 @@ Lotus Europa   30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2
 Volvo 142E     21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></pre>
 </div>
 </div>
-<p>Coming back to our problem, we combine a dplyr <code>filter</code> with subsetting and a <code>which.max</code> to isolate the max price dates, then we filter each date by the newly subsetted date. Coupled with per-operation grouping, we can accomplish the entire process in a single step!</p>
+<p>In dplyr, we can apply this same principle by combining a <code>filter</code> with a subset. For our case, we combine <code>filter</code>, subset, and <code>which.max</code> to isolate the max price dates. Coupled with per-operation grouping, we can accomplish the entire process in a single step!</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>stock_downfalls <span class="ot">&lt;-</span> </span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  big_tech_stock_prices <span class="sc">|&gt;</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># filter date by the grouped and subsetted date</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(date <span class="sc">&gt;</span> date[<span class="fu">which.max</span>(adj_close)], <span class="at">.by =</span> stock_symbol)</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>stock_downfalls <span class="sc">|&gt;</span> </span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_min</span>(date, <span class="at">n =</span> <span class="dv">3</span>, <span class="at">by =</span> stock_symbol) <span class="sc">|&gt;</span> </span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(stock_symbol, date, adj_close)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 42 × 3
-   stock_symbol date       adj_close
-   &lt;chr&gt;        &lt;date&gt;         &lt;dbl&gt;
- 1 AAPL         2022-01-04      179.
- 2 AAPL         2022-01-05      174.
- 3 AAPL         2022-01-06      171.
- 4 ADBE         2021-11-22      674.
- 5 ADBE         2021-11-23      665.
- 6 ADBE         2021-11-24      668.
- 7 AMZN         2021-07-09      186.
- 8 AMZN         2021-07-12      186.
- 9 AMZN         2021-07-13      184.
-10 CRM          2021-11-09      310.
-# … with 32 more rows</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>stock_downfalls <span class="sc">|&gt;</span> </span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(date, adj_close, <span class="at">color =</span> stock_symbol)) <span class="sc">+</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  ggrepel<span class="sc">::</span><span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(peak_date, peak_price, <span class="at">label =</span> stock_symbol), <span class="at">data =</span> peak_price_dates, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_date_short</span>(), <span class="at">breaks =</span> <span class="st">"month"</span>) <span class="sc">+</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Big Tech Stock Downfall"</span>,</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="cn">NULL</span></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>stock_downfalls <span class="ot">&lt;-</span> </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  big_tech_stock_prices <span class="sc">|&gt;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># filter date by the grouped and subsetted date</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(date <span class="sc">&gt;=</span> date[<span class="fu">which.max</span>(adj_close)], <span class="at">.by =</span> stock_symbol)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>stock_downfalls <span class="sc">|&gt;</span> </span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(date, adj_close, <span class="at">color =</span> stock_symbol)) <span class="sc">+</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  ggrepel<span class="sc">::</span><span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(peak_date, peak_price, <span class="at">label =</span> stock_symbol), <span class="at">data =</span> peak_price_dates, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_date_short</span>(), <span class="at">breaks =</span> <span class="st">"month"</span>) <span class="sc">+</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Big Tech Stock Declines"</span>, <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Now we can see clearly which stocks had more dramatic price dips and how they fared over the following year.</p>
+<p>Now we can clearly see which stocks endured more dramatic price dips and how they fared over the following 1-2 years.</p>
 <p>Thank you so much for reading and I hope this exercise was useful. Please reach out if you have any questions or feedback!</p>
 
 

@@ -1,7 +1,7 @@
 ---
 title: "Big Tech Stock: Per-operation Grouping"
 author: "Parker Barnes"
-date: "2023-02-08"
+date: "2023-02-09"
 execute: 
   warning: false
   message: false
@@ -9,7 +9,7 @@ execute:
 
 ![](big_tech.jpg)
 
-Welcome to my very first #tidytuesday blog post! In this post I will showcase the new [per-operation grouping](https://www.tidyverse.org/blog/2023/02/dplyr-1-1-0-per-operation-grouping/) functionality released in dplyr 1.1.0. I'll also combine it with one of my favorite lesser known dplyr tricks.
+Welcome to my very first #tidytuesday blog post! In this post I will showcase the new [per-operation grouping](https://www.tidyverse.org/blog/2023/02/dplyr-1-1-0-per-operation-grouping/) functionality released in dplyr 1.1.0. I also want to demonstrate one of my favorite lesser-known dplyr tricks!
 
 I'll use [this week's tidytuesday data set](https://github.com/rfordatascience/tidytuesday/blob/master/data/2023/2023-02-07/readme.md) consisting of daily big tech stock prices from 2010-2022 to demonstrate.
 
@@ -39,7 +39,7 @@ theme_set(theme_minimal())
   # filter(date <= "2022-12-29")
 ```
 
-Meta and Tesla did not go public until after Jan 2010, and so they have a few less observations
+Note: Meta and Tesla did not go public until after Jan 2010, and so they have a few less observations
 
 Now let's visualize the stocks as simple faceted line charts
 
@@ -51,7 +51,7 @@ big_tech_stock_prices |>
   labs(x = NULL, y = NULL)
 ```
 
-With the exception of IBM, every stock peaks around the end of 2021, and then declines thereafter.
+With the exception of IBM, each stock peaks around the end of 2021, and then declines thereafter.
 
 Let's zoom in on the peaks by plotting them on the same axes. Here I will use the new dplyr functionality to find the maximum `adj_close` by `stock_symbol`.
 
@@ -69,22 +69,9 @@ big_tech_stock_prices |>
 
 How steep of a decline do these stocks see in the weeks and months following their peak? How do they compare to each other?
 
-To answer this question, we will need to filter each stock to include only the data following its peak. This may seem trivial at first, but it's a bit trickier than you think. Since each stock has a different date at which is hits its peak price, wecan't simply filter by a single date.
+To answer this question, we will need to filter each stock to include only the data following its peak. This may seem trivial at first, but it's a bit trickier than you think. Since each stock has a different date at which is hits its peak price, we can't simply filter by a single date.
 
-The first approach might be to modify our original `slice_max` but increase `n` to include more data, but that's not going to work because the top `n` prices don't necessarily follow the maximum. In fact, many of them are going to appear prior to the max.
-
-```{r}
-big_tech_stock_prices |> 
-  # doesn't take date into account
-  slice_max(adj_close, n = 3, by = stock_symbol) |> 
-  mutate(
-    date, price_rank = row_number(adj_close), 
-    .by = stock_symbol, 
-    .keep = "used"
-  )
-```
-
-A better approach might be to save the dates of the maximum prices into a separate tibble, join that tibble with the original, and finally, filter the dates.
+One approach would be to save the dates at which the stocks hit their maximum prices into a separate tibble, join that tibble with the original, and finally, filter the dates.
 
 ```{r}
 peak_price_dates <- 
@@ -100,11 +87,9 @@ big_tech_stock_prices |>
   select(stock_symbol, date, adj_close)
 ```
 
-This solution works, but in my opinion, is somewhat clunky because it requires extra steps and a separate tibble. How might we accomplish this without breaking the dplyr chain?
+This solution works, but there's a better (in my opinion) way that doesn't require a separate tibble. The method is derived from a base-R concept called *subsetting*.
 
-The solution comes from a base-R concept called *subsetting*.
-
-Subsetting is used to filter a vector or dataframe by some condition, much like `dplyr::filter`. Instead of a function call, we use square brackets (`[]`).
+Subsetting can be used to filter a vector or dataframe by some condition, much like `dplyr::filter`. Instead of a function call, we use square brackets (`[]`).
 
 ```{r}
 vec <- 0:20
@@ -115,17 +100,13 @@ vec[vec %% 2 == 0]
 mtcars[mtcars$mpg > 21,]
 ```
 
-Coming back to our problem, we combine a dplyr `filter` with subsetting and a `which.max` to isolate the max price dates, then we filter each date by the newly subsetted date. Coupled with per-operation grouping, we can accomplish the entire process in a single step!
+In dplyr, we can apply this same principle by combining a `filter` with a subset. For our case, we combine `filter`, subset, and `which.max` to isolate the max price dates. Coupled with per-operation grouping, we can accomplish the entire process in a single step!
 
 ```{r}
 stock_downfalls <- 
   big_tech_stock_prices |>
   # filter date by the grouped and subsetted date
-  filter(date > date[which.max(adj_close)], .by = stock_symbol)
-
-stock_downfalls |> 
-  slice_min(date, n = 3, by = stock_symbol) |> 
-  select(stock_symbol, date, adj_close)
+  filter(date >= date[which.max(adj_close)], .by = stock_symbol)
 
 stock_downfalls |> 
   ggplot(aes(date, adj_close, color = stock_symbol)) +
@@ -136,6 +117,6 @@ stock_downfalls |>
   theme(legend.position = "none")
 ```
 
-Now we can see clearly which stocks had more dramatic price dips and how they fared over the following year.
+Now we can clearly see which stocks endured more dramatic price dips and how they fared over the following 1-2 years.
 
 Thank you so much for reading and I hope this exercise was useful. Please reach out if you have any questions or feedback!
