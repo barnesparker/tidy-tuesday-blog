@@ -1,27 +1,34 @@
 ---
-title: "Big Tech Stock: Per-operation Grouping"
+title: "Decline of Big Tech Stock"
 author: "Parker Barnes"
 date: "2023-02-09"
-execute: 
-  warning: false
-  message: false
 ---
 
 ![](big_tech.jpg)
 
 Welcome to my very first #tidytuesday blog post! In this post I will showcase the new [per-operation grouping](https://www.tidyverse.org/blog/2023/02/dplyr-1-1-0-per-operation-grouping/) functionality released in dplyr 1.1.0. I also want to demonstrate one of my favorite lesser-known dplyr tricks!
 
-I'll use [this week's tidytuesday data set](https://github.com/rfordatascience/tidytuesday/blob/master/data/2023/2023-02-07/readme.md) consisting of daily big tech stock prices from 2010-2022 to demonstrate.
+For this analysis, we'll explore [this week's tidytuesday data set](https://github.com/rfordatascience/tidytuesday/blob/master/data/2023/2023-02-07/readme.md) consisting of daily big tech stock prices from 2010-2022.
 
-First, let's download the data:
+First, let's download the data.
+
+```{r setup}
+#| include: false
+
+ggplot2::theme_set(ggplot2::theme_bw())
+
+knitr::opts_chunk$set(
+  warning = F, message = F, echo = T
+)
+```
 
 ```{r}
 #| message: false
 #| warning: false
-library(tidyverse, quietly = T)
+library(tidyverse)
 
-big_tech_stock_prices <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-07/big_tech_stock_prices.csv')
-big_tech_companies <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-07/big_tech_companies.csv')
+big_tech_stock_prices <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-07/big_tech_stock_prices.csv')
+big_tech_companies <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-07/big_tech_companies.csv')
 
 big_tech_stock_prices |> glimpse()
 
@@ -31,17 +38,9 @@ big_tech_stock_prices |>
   select(company, stock_symbol, n)
 ```
 
-```{r}
-#| include: false
-theme_set(theme_minimal())
-# big_tech_stock_prices <- 
-  # big_tech_stock_prices |>
-  # filter(date <= "2022-12-29")
-```
+Note: Meta and Tesla did not go public until after Jan 2010, so they have slightly less data.
 
-Note: Meta and Tesla did not go public until after Jan 2010, and so they have a few less observations
-
-Now let's visualize the stocks as simple faceted line charts
+Now let's visualize the stocks as simple faceted line charts.
 
 ```{r}
 big_tech_stock_prices |>
@@ -53,7 +52,7 @@ big_tech_stock_prices |>
 
 With the exception of IBM, each stock peaks around the end of 2021, and then declines thereafter.
 
-Let's zoom in on the peaks by plotting them on the same axes. Here I will use the new dplyr functionality to find the maximum `adj_close` by `stock_symbol`.
+Let's zoom in on the peaks by plotting them on the same axes. Here we will use the new `by` argument to find the maximum `adj_close` for each `stock_symbol`.
 
 ```{r}
 big_tech_stock_prices |> 
@@ -69,9 +68,9 @@ big_tech_stock_prices |>
 
 How steep of a decline do these stocks see in the weeks and months following their peak? How do they compare to each other?
 
-To answer this question, we will need to filter each stock to include only the data following its peak. This may seem trivial at first, but it's a bit trickier than you think. Since each stock has a different date at which is hits its peak price, we can't simply filter by a single date.
+To answer this question, we will need to filter each stock to include only the data following its peak. This may seem trivial at first, but it's a bit trickier than you might think. Since each stock reaches its peak at a different point, we can't simply filter the whole data set by a single value.
 
-One approach would be to save the dates at which the stocks hit their maximum prices into a separate tibble, join that tibble with the original, and finally, filter the dates.
+One approach would be to make a separate tibble containing just the max price dates, join it back with the original, and filter the dates.
 
 ```{r}
 peak_price_dates <- 
@@ -96,11 +95,11 @@ vec <- 0:20
 # subset to get even numbers
 vec[vec %% 2 == 0]
 
-# subset to get rows with mpg > 18
+# subset to get rows with mpg > 21
 mtcars[mtcars$mpg > 21,]
 ```
 
-In dplyr, we can apply this same principle by combining a `filter` with a subset. For our case, we combine `filter`, subset, and `which.max` to isolate the max price dates. Coupled with per-operation grouping, we can accomplish the entire process in a single step!
+In dplyr, we can apply this same principle by combining a `filter` with a subset. For our case, we combine `filter`, subset, and `which.max`. Coupled with per-operation grouping, we can accomplish the entire process in a single step!
 
 ```{r}
 stock_downfalls <- 
@@ -113,7 +112,7 @@ stock_downfalls |>
   geom_line() +
   ggrepel::geom_label_repel(aes(peak_date, peak_price, label = stock_symbol), data = peak_price_dates, size = 3) +
   scale_x_date(labels = scales::label_date_short(), breaks = "month") +
-  labs(title = "Big Tech Stock Declines", x = NULL, y = NULL) +
+  labs(x = NULL, y = NULL) +
   theme(legend.position = "none")
 ```
 
