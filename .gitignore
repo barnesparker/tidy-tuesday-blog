@@ -1,2 +1,9 @@
 /.quarto/
 .Rproj.user
+*.png
+.Rhistory
+.Rhistory
+*.json
+*.json
+*.png
+alone_names.csv
