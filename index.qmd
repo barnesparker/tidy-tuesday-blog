@@ -1,5 +1,5 @@
 ---
-title: "TidyTricks Blog"
+title: "Blog"
 listing:
   contents: posts
   sort: "date desc"
@@ -9,6 +9,9 @@ listing:
   filter-ui: false
 page-layout: full
 title-block-banner: true
+
+website:
+  favicon: pb_profile.jpeg
 ---
 
 
