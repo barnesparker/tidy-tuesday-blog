@@ -4,6 +4,16 @@ project:
 website:
   title: "Parker Barnes"
   navbar:
+  
+    left: 
+      - href: blog.qmd
+        text: Blog
+      - href: projects.qmd
+        text: Projects
+      - href: resume.qmd
+        text: Resume
+  
+  
     right:
       - about.qmd
       - icon: github

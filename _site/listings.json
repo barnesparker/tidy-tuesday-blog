@@ -2,7 +2,27 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/alone/index.html",
       "/posts/big-tech-stock/index.html"
+    ]
+  },
+  {
+    "listing": "/blog.html",
+    "items": [
+      "/posts/alone/index.html",
+      "/posts/big-tech-stock/index.html"
+    ]
+  },
+  {
+    "listing": "/apps.html",
+    "items": [
+      "/apps/index.html"
+    ]
+  },
+  {
+    "listing": "/projects.html",
+    "items": [
+      "/projects/alone_dashboard/index.html"
     ]
   }
 ]

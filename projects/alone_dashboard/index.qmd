@@ -1,0 +1,13 @@
+---
+title: "Visualizing Alone Survivalists with {crosstalk} and {reactable}"
+author: "Parker Barnes"
+date: "2023-03-17"
+---
+
+![](alone_dashboard.png)
+
+This is a super basic dashboard showcasing the data I explored in one of my recent blog posts. I mostly wanted to try out a few packages I had heard about but hadn't used before. {flexdashboard} lets you create dashboards using RMarkdown files, and does not require Shiny. {crosstalk} adds basic interaction between dashboard elements. Again, without using shiny. And finally, {reactable} is a package for creating interactive tables, and it allowed me to incorporate nested tables for the survivalists' items.
+
+I specifically used {flexdashboard} and {crosstalk} to avoid having to use Shiny, since it requires a server and a hosting service. I wanted to see if I could embed the dashboard directly in my website. Unfortunately, quarto does not support {flexdashboard} quite yet, but [it's in the works](https://github.com/quarto-dev/quarto-cli/discussions/3271)! So for now, I deployed my dashboard on [RPubs](https://rpubs.com/), which is a free publishing platform supported by Posit.
+
+You can access my app here: [Alone Dashboard](https://rpubs.com/barnesparker/alone)
