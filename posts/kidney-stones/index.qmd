@@ -1,0 +1,9 @@
+---
+title: "Kidney Stone Prediction - The Power of tidymodels"
+author: "Parker Barnes"
+date: "2023-04-03"
+format: 
+  html:
+    toc: true
+    code-fold: show
+---

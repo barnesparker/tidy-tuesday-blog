@@ -9,7 +9,7 @@
 <meta name="author" content="Parker Barnes">
 <meta name="dcterms.date" content="2023-03-17">
 
-<title>Parker Barnes - Visualizing Alone Survivalists with {crosstalk} and {reactable}</title>
+<title>Parker Barnes - Exploring Alone Survivalists with {crosstalk} and {reactable}</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -82,7 +82,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../blog.html">
+    <a class="nav-link" href="../../index.html">
  <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
@@ -125,7 +125,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Visualizing Alone Survivalists with {crosstalk} and {reactable}</h1>
+<h1 class="title">Exploring Alone Survivalists with {crosstalk} and {reactable}</h1>
 </div>
 
 
@@ -152,7 +152,11 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p><img src="alone_dashboard.png" class="img-fluid"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://rpubs.com/barnesparker/alone"><img src="alone_dashboard.png" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
 <p>This is a super basic dashboard showcasing the data I explored in one of my recent blog posts. I mostly wanted to try out a few packages I had heard about but hadn’t used before. {flexdashboard} lets you create dashboards using RMarkdown files, and does not require Shiny. {crosstalk} adds basic interaction between dashboard elements. Again, without using shiny. And finally, {reactable} is a package for creating interactive tables, and it allowed me to incorporate nested tables for the survivalists’ items.</p>
 <p>I specifically used {flexdashboard} and {crosstalk} to avoid having to use Shiny, since it requires a server and a hosting service. I wanted to see if I could embed the dashboard directly in my website. Unfortunately, quarto does not support {flexdashboard} quite yet, but <a href="https://github.com/quarto-dev/quarto-cli/discussions/3271">it’s in the works</a>! So for now, I deployed my dashboard on <a href="https://rpubs.com/">RPubs</a>, which is a free publishing platform supported by Posit.</p>
 <p>You can access my app here: <a href="https://rpubs.com/barnesparker/alone">Alone Dashboard</a></p>

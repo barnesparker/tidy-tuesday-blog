@@ -9,3 +9,8 @@
 alone_names.csv
 .Rhistory
 _freeze/posts/big-tech-stock/index/figure-html/unnamed-chunk-2-1.png
+*.js
+*.css
+*.map
+*.png
+posts/drugs.R

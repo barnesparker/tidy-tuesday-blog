@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Parker Barnes">
+<meta name="dcterms.date" content="2023-03-21">
+
+<title>Parker Barnes - Spatial Temporal Visualization of Numbat Sightings</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="../../site_libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+<script src="../../site_libs/jquery-1.12.4/jquery.min.js"></script>
+<link href="../../site_libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
+<script src="../../site_libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="../../site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
+<script src="../../site_libs/proj4-2.6.2/proj4.min.js"></script>
+<script src="../../site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="../../site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
+<script src="../../site_libs/leaflet-binding-2.1.2/leaflet.js"></script>
+<script src="../../site_libs/echarts4r-4.8.0/echarts-en.min.js"></script>
+<script src="../../site_libs/echarts4r-4.8.0/ecStat.min.js"></script>
+<script src="../../site_libs/echarts4r-4.8.0/dataTool.min.js"></script>
+<script src="../../site_libs/echarts4r-binding-0.4.4/echarts4r.js"></script>
+<script src="../../site_libs/echarts-world-1.0.0/world.js"></script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Parker Barnes</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">
+ <span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../projects.html">
+ <span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../resume.html">
+ <span class="menu-text">Resume</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/barnesparker"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/paRkeRuser1"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Spatial Temporal Visualization of Numbat Sightings</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Parker Barnes </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 21, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p><img src="6d4beccdaa1b8fa884e57b2b5d7b28211438173e.webp" class="img-fluid"></p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(echarts4r)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(echarts4r.maps)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggmap)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leaflet)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>In this post I will leverage some unique capabilities from the {echarts4r} package to visualize both spatial and temporal data at the same time. Normally, you would need more than 1 plot to accomplish this, but {echarts4r} has a nifty “timeline” feature that makes it effortless to combine the two.</p>
+<p>I will use the #tidytuesday <a href="https://github.com/rfordatascience/tidytuesday/blob/master/data/2023/2023-03-07/readme.md">data set</a> from March 7, 2023. The data consists of sightings of the endangered Numbat, a carnivorous marsupial native to Australia. It’s closest relative is the Tasmanian Devil. Sightings date back to 1856.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>numbats <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-03-07/numbats.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>First, let’s explore where Numbats have been spotted without respect to any time variable.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>numbats <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(month) <span class="sc">|&gt;</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">leaflet</span>() <span class="sc">|&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addTiles</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addCircleMarkers</span>(</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">lng =</span> <span class="sc">~</span>decimalLongitude,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">lat =</span> <span class="sc">~</span>decimalLatitude,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">radius =</span> <span class="dv">2</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="leaflet html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-f1c61f130349acc5d91b" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-f1c61f130349acc5d91b">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[-35.103409,-34.53549,-34.53431,-34.53429,-34.53389,-34.53316,-34.5331,-34.53309,-34.53309,-34.53309,-34.53308,-34.53307,-34.53307,-34.53305,-34.53304,-34.5329,-34.53287,-34.53284,-34.53278,-34.53276,-34.53265,-34.53263,-34.53262,-34.53259,-34.53256,-34.53255,-34.53254,-34.53237,-34.53231,-34.53204,-34.53185,-34.53184,-34.53183,-34.53181,-34.53178,-34.53176,-34.53175,-34.53172,-34.5317,-34.53165,-34.53156,-34.53148,-34.53145,-34.53132,-34.53086,-34.53072,-34.53064,-34.53059,-34.52955,-34.5293,-34.52916,-34.52905,-34.52875,-34.52843,-34.52819,-34.52794,-34.52764,-34.52739,-34.52727,-34.52722,-34.5272,-34.52594,-34.52576,-34.52549,-34.52535,-34.52471,-34.52431,-34.5243,-34.52428,-34.52407,-34.52403,-34.5239,-34.5237,-34.52334,-34.52241,-34.52241,-34.52227,-34.52226,-34.52225,-34.52223,-34.52223,-34.5222,-34.52199,-34.52178,-34.52178,-34.521561,-34.52151,-34.52131,-34.52113,-34.52068,-34.52034,-34.52017,-34.51985,-34.51984,-34.51952,-34.51948,-34.51901,-34.51894,-34.51843,-34.51799,-34.51792,-34.51791,-34.51788,-34.51783,-34.51777,-34.51776,-34.5176,-34.51758,-34.51758,-34.51758,-34.51758,-34.51751,-34.51746,-34.51697,-34.51689,-34.51667,-34.51641,-34.51638,-34.51629,-34.51616,-34.5161,-34.51603,-34.51567,-34.51533,-34.51449,-34.51448,-34.51378,-34.51357,-34.51337,-34.51331,-34.51323,-34.51323,-34.51316,-34.51312,-34.51308,-34.51307,-34.51291,-34.51287,-34.51285,-34.5128,-34.51267,-34.51256,-34.51244,-34.51243,-34.51174,-34.51133,-34.51128,-34.51096,-34.51072,-34.51038,-34.51017,-34.51005,-34.51002,-34.50984,-34.50951,-34.50938,-34.5091,-34.5091,-34.5091,-34.5091,-34.5091,-34.5091,-34.5091,-34.5091,-34.5091,-34.5091,-34.5091,-34.5091,-34.5091,-34.50906,-34.50888,-34.50888,-34.5088,-34.50879,-34.50869,-34.50866,-34.50828,-34.508,-34.50767,-34.50766,-34.50765,-34.50762,-34.5076,-34.50759,-34.50758,-34.50758,-34.50756,-34.50754,-34.50751,-34.50739,-34.50738,-34.50737,-34.50736,-34.50734,-34.5073,-34.50729,-34.50728,-34.50714,-34.50713,-34.50711,-34.5067,-34.50654,-34.50614,-34.50574,-34.50571,-34.50569,-34.50567,-34.50553,-34.50537,-34.50532,-34.50528,-34.50513,-34.50511,-34.5051,-34.505,-34.50498,-34.50486,-34.5048,-34.50479,-34.50477,-34.50466,-34.50449,-34.50446,-34.50446,-34.50433,-34.50399,-34.50388,-34.50386,-34.50386,-34.50376,-34.50375,-34.50372,-34.50372,-34.50371,-34.5037,-34.50369,-34.50367,-34.50366,-34.50365,-34.50363,-34.50363,-34.50363,-34.50363,-34.50358,-34.50358,-34.50357,-34.50357,-34.50357,-34.50357,-34.50356,-34.50355,-34.50354,-34.50354,-34.50352,-34.214963032747,-34.214912032747,-34.214912032747,-34.2035300327312,-34.2035300327312,-34.2035300327312,-34.2035300327312,-34.2035300327312,-34.2035300327312,-34.2035300327312,-34.2035300327312,-34.2035300327312,-34.2034840327311,-34.2034840327311,-34.2034840327311,-34.2034840327311,-34.2034840327311,-34.2034840327311,-34.2034840327311,-34.2034840327311,-34.2034840327311,-34.2034840327311,-34.2034840327311,-34.2034840327311,-34.2034840327311,-34.2034840327311,-34.2034840327311,-34.2034840327311,-34.2,-34.1,-34.1,-34.0817999991239,-33.9481540323746,-33.39017,-33.2212150313316,-33.2212040313316,-33.2174190313261,-33.2162950313244,-33.2153590313231,-33.2152790313229,-33.2143330313216,-33.2143330313216,-33.2133490313201,-33.212602031319,-33.2124800313189,-33.2122580313185,-33.2121930313184,-33.2121240313183,-33.2113850313173,-33.211215031317,-33.2111520313169,-33.2107660313164,-33.2103660313158,-33.2099740313152,-33.2099600313152,-33.2099580313152,-33.2099350313151,-33.2099300313151,-33.2094240313144,-33.2088940313136,-33.2084360313129,-33.2078840313121,-33.2070310313109,-33.2067760313105,-33.2066700313104,-33.2066180313103,-33.204903,-33.204903,-33.204398031307,-33.2033930313056,-33.202313031304,-33.2015510313029,-33.20115,-33.2001000313007,-33.1997960313003,-33.1991170312993,-33.1985350312985,-33.1965530312956,-33.1964920312955,-33.1963680312953,-33.1949920312933,-33.19274103129,-33.1925020312896,-33.192065031289,-33.1915540312882,-33.1915540312882,-33.1910220312875,-33.1909950312874,-33.1909340312873,-33.1899460312859,-33.1892060312848,-33.1890720312846,-33.1887900312842,-33.1887900312842,-33.1885960312839,-33.1874670312823,-33.1871390312818,-33.1870240312816,-33.1867930312813,-33.1867630312812,-33.1863580312806,-33.1863580312806,-33.1863450312806,-33.1862110312804,-33.1858870312799,-33.1855950312795,-33.1850550312787,-33.1846590312781,-33.184572031278,-33.1841020312773,-33.1835020312764,-33.1833390312762,-33.1833390312762,-33.1833390312762,-33.1826680312752,-33.1821110312744,-33.1819460312742,-33.1808600312726,-33.1808,-33.1805040312721,-33.1804970312721,-33.1795680312707,-33.1792840312703,-33.1791920312701,-33.17911603127,-33.1764580312661,-33.1762970312659,-33.1753390312645,-33.1744350312632,-33.1734600312617,-33.1733210312615,-33.1726580312606,-33.1723180312601,-33.1720940312597,-33.1719910312596,-33.1716600312591,-33.1715100312589,-33.1714520312588,-33.1714500312588,-33.1714310312588,-33.1712730312585,-33.1710990312583,-33.1704840312574,-33.1689040312551,-33.1674510312529,-33.1671870312525,-33.1662390312512,-33.1657420312504,-33.1656720312503,-33.1637090312474,-33.1635400312472,-33.1635380312472,-33.1635240312472,-33.1631970312467,-33.1631970312467,-33.1620810312451,-33.1620810312451,-33.1619320312448,-33.1603200312425,-33.1596230312415,-33.1593860312411,-33.159327031241,-33.1586670312401,-33.1580920312392,-33.157975031239,-33.1576160312385,-33.1576160312385,-33.1574360312383,-33.157258031238,-33.1566660312371,-33.1563360312366,-33.1563230312366,-33.1561500312364,-33.1559620312361,-33.155883031236,-33.1552630312351,-33.1546350312341,-33.1544770312339,-33.1544130312338,-33.1499730312273,-33.1491710312261,-33.1474350312236,-33.144331031219,-33.144331031219,-33.1433300312176,-33.1430940312172,-33.1425430312164,-33.1423490312161,-33.1401340312129,-33.1294000311971,-33.1283000311955,-33.1243570311897,-33.1207850311845,-33.1207850311845,-33.1207850311845,-33.1188720311817,-33.1139700311745,-33.1125640311724,-33.1125110311723,-33.1117890311713,-33.1114710311708,-33.1037560311594,-33.1032340311587,-33.1032340311587,-33.10064,-33.0990530311525,-33.0990530311525,-33.0990530311525,-33.0990530311525,-32.9,-32.9,-32.9,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.8,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.7,-32.6,-32.6,-32.6,-32.6,-32.6,-32.6,-32.5,-32.5,-30.37873,-30.37839,-30.37588,-30.37579,-30.3718,-30.3718,null,null,null,null,null,null,null,null,null,null,null,-24.831907,-23.3319,-23.3319,null,null,-23.3319,null,null],[150.256989,139.46865,139.44479,139.4442,139.43695,139.46768,139.44028,139.43851,139.43836,139.43841,139.43875,139.43827,139.44054,139.44365,139.44121,139.44444,139.44323,139.44527,139.44672,139.44778,139.44923,139.44949,139.45036,139.45013,139.4473,139.45161,139.45168,139.45501,139.45634,139.4598,139.46582,139.46587,139.46564,139.4654,139.4653,139.46576,139.46728,139.46819,139.46861,139.46674,139.43831,139.47246,139.47367,139.47517,139.43838,139.47508,139.43694,139.47512,139.47375,139.43855,139.43828,139.47506,139.47458,139.43698,139.43834,139.43834,139.47508,139.43832,139.43832,139.43831,139.47511,139.43834,139.43837,139.43695,139.47503,139.43828,139.43831,139.45566,139.43697,139.47375,139.43828,139.44198,139.43833,139.43696,139.4383,139.4383,139.44371,139.44706,139.44419,139.44423,139.44388,139.44476,139.442,139.4383,139.44719,139.460079,139.44589,139.43696,139.43877,139.43831,139.43831,139.4751,139.43845,139.4751,139.43826,139.45464,139.43827,139.4383,139.43832,139.4383,139.46658,139.43827,139.43829,139.47331,139.47512,139.47271,139.46928,139.47003,139.47449,139.47005,139.46923,139.47512,139.46898,139.46874,139.47171,139.4734,139.47273,139.47471,139.47555,139.47555,139.43831,139.46718,139.43833,139.45494,139.46517,139.4648,139.4617,139.46146,139.46159,139.45838,139.43898,139.43898,139.46171,139.45981,139.4623,139.4623,139.45518,139.43828,139.46088,139.47624,139.43909,139.43266,139.43829,139.47622,139.43696,139.43697,139.4639,139.46391,139.46391,139.47625,139.4763,139.47632,139.47601,139.45427,139.46846,139.46854,139.433,139.433,139.433,139.433,139.433,139.433,139.433,139.433,139.433,139.433,139.433,139.433,139.433,139.47633,139.45428,139.47437,139.47362,139.47632,139.43832,139.45654,139.45717,139.47635,139.47454,139.47107,139.47612,139.47128,139.47125,139.47138,139.47493,139.47403,139.47399,139.47026,139.45778,139.47562,139.47481,139.43829,139.47342,139.47573,139.45775,139.47556,139.47508,139.47522,139.47527,139.4754,139.47556,139.4383,139.43826,139.47534,139.47527,139.476,139.47619,139.43694,139.43695,139.47522,139.46477,139.46915,139.46204,139.46178,139.45879,139.45878,139.47646,139.4765,139.47653,139.47652,139.47645,139.47661,139.43831,139.43831,139.4766,139.47672,139.46604,139.4765,139.47673,139.46092,139.46405,139.47584,139.47629,139.47576,139.47652,139.47197,139.46671,139.46371,139.46819,139.45338,139.46335,139.46411,139.44487,139.44317,139.45214,139.44508,139.44956,139.44716,139.45055,139.44501,139.43854,139.44407,139.43848,139.43918,142.50224,142.489023,142.489023,142.51584,142.51584,142.51584,142.51584,142.51584,142.51584,142.51584,142.51584,142.51584,142.52942,142.52942,142.52942,142.52942,142.52942,142.52942,142.52942,142.52942,142.52942,142.52942,142.52942,142.52942,142.52942,142.52942,142.52942,142.52942,116.5,116.5,116.7,141.9179,141.959047,141.31988,141.184988,141.18189,141.161322,141.165076,141.141584,141.140876,141.13285,141.13285,141.166784,141.172247,141.165771,141.179372,141.151533,141.167976,141.153349,141.172878,141.173082,141.184466,141.169771,141.139791,141.160343,141.161706,141.165676,141.147906,141.185964,141.186758,141.166036,141.187261,141.178332,141.187366,141.182668,141.183245,141.166676,141.166676,141.134839,141.172231,141.165908,141.122979,141.16832,141.136253,141.135321,141.174062,141.164871,141.169352,141.168225,141.185241,141.163223,141.145721,141.176993,141.144873,141.143945,141.143945,141.133907,141.176244,141.139989,141.177083,141.188894,141.18781,141.184514,141.18456,141.141488,141.171791,141.143362,141.189168,141.182442,141.143308,141.190292,141.190292,141.178169,141.190374,141.158117,141.163132,141.190129,141.155884,141.123876,141.178285,141.147748,141.142901,141.142901,141.142901,141.140554,141.131307,141.187459,141.127981,141.12916,141.150657,141.190652,141.176388,141.163534,141.165609,141.162572,141.161226,141.149816,141.19074,141.192067,141.158694,141.184346,141.179998,141.191777,141.079805,141.16302,141.192482,141.126691,141.192159,141.182636,141.163394,141.184697,141.181948,141.148626,141.176366,141.1272,141.167333,141.146117,141.193317,141.145337,141.161702,141.155121,141.157127,141.146155,141.147261,141.147261,141.174337,141.174337,141.18357,141.17561,141.193044,141.188634,141.194257,141.177397,141.193675,141.172505,141.189126,141.189126,141.189106,141.184622,141.128573,141.173425,141.153737,141.171419,141.169735,141.168759,141.142278,141.155778,141.155792,141.127706,141.163193,141.147579,141.129823,141.177157,141.177157,141.169745,141.167662,141.130316,141.177772,141.146588,141.168483,141.161073,141.160955,141.133344,141.133344,141.133344,141.200096,141.158893,141.150642,141.149522,141.201087,141.20103,141.152333,141.17525,141.17525,141.15752,141.141447,141.141447,141.141447,141.141447,116.8,117.2,117,116.9,116.8,116.9,117.1,116.9,116.9,117,116.9,116.9,116.8,116.8,117,116.9,116.9,116.9,117,116.9,117,116.9,116.9,117,116.9,116.9,116.8,116.9,116.9,116.9,116.9,116.9,116.8,116.9,116.9,117,116.9,116.9,117,116.8,117,116.9,116.9,117,117,116.9,116.9,116.9,117,117,117,116.8,116.8,116.9,116.9,117,117,116.9,117,117.1,117,117,116.9,116.9,136.84935,136.85448,136.86828,136.86291,136.87034,136.87034,null,null,null,null,null,null,null,null,null,null,null,129.084621,129.418003,129.418003,null,null,129.418003,null,null],2,null,null,{"interactive":true,"className":"","stroke":true,"color":"#03F","weight":5,"opacity":0.5,"fill":true,"fillColor":"#03F","fillOpacity":0.2},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[-35.103409,-23.3319],"lng":[116.5,150.256989]}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>numbats <span class="sc">|&gt;</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(month) <span class="sc">|&gt;</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(<span class="at">month =</span> <span class="fu">factor</span>(month, <span class="at">levels =</span> month.abb)) <span class="sc">|&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(month, n)) <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># geom_point() +</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>numbats <span class="sc">|&gt;</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(month) <span class="sc">|&gt;</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">decimalLongitude =</span> <span class="fu">signif</span>(decimalLongitude, <span class="at">digits =</span> <span class="dv">2</span>),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">decimalLatitude =</span> <span class="fu">signif</span>(decimalLatitude, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_count</span>(month, decimalLongitude, decimalLatitude) <span class="sc">|&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(month, decimalLatitude, decimalLongitude, <span class="at">.keep_all =</span> T) <span class="sc">|&gt;</span> </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="at">month =</span> <span class="fu">factor</span>(month, <span class="at">levels =</span> month.abb)) <span class="sc">|&gt;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">e_charts</span>(</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    decimalLongitude,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">timeline =</span> T</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># e_leaflet() |&gt; </span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># e_leaflet_tile() |&gt; </span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">e_geo</span>(</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">roam =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">boundingCoords =</span> <span class="fu">list</span>(</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(<span class="dv">140</span>, <span class="sc">-</span><span class="dv">10</span>),</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(<span class="dv">120</span>, <span class="sc">-</span><span class="dv">40</span>)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">e_scatter</span>(</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    decimalLatitude, </span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    n,</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">coord_system =</span> <span class="st">"geo"</span>,</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">symbol =</span> <span class="st">"pin"</span>,</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># e_labels() |&gt;</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">e_timeline_opts</span>(</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis_type =</span> <span class="st">"category"</span>,</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">playInterval =</span> <span class="dv">1000</span>,</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">realtime =</span> F</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">e_animation</span>(<span class="at">duration.update =</span> <span class="dv">100</span>, <span class="at">delay.update =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">e_visual_map</span>(<span class="at">min =</span> <span class="dv">1</span>, <span class="at">max =</span> <span class="dv">20</span>, <span class="at">inRange =</span> <span class="fu">list</span>(<span class="at">color =</span> <span class="fu">c</span>(<span class="st">"rgb(253,231,37)"</span>, <span class="st">"rgb(68,1,84)"</span>), <span class="at">symbolSize =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">60</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="echarts4r html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-ce62b46e78c1e4a389a4" style="width:100%;height:500px;"></div>
+<script type="application/json" data-for="htmlwidget-ce62b46e78c1e4a389a4">{"x":{"theme":"","tl":true,"draw":true,"renderer":"canvas","events":[],"buttons":[],"opts":{"baseOption":{"timeline":{"data":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"axisType":"category","playInterval":1000,"realtime":false},"geo":{"map":"world","roam":true,"boundingCoords":[[140,-10],[120,-40]]},"legend":{"data":["decimalLatitude"]},"series":[{"coordinateSystem":"geo","symbolSize":"function(data){ return data[3];}","name":"decimalLatitude","type":"scatter","symbol":"pin"}],"animation":true,"animationDurationUpdate":100,"animationDelayUpdate":0,"visualMap":[{"min":1,"max":20,"inRange":{"color":["rgb(253,231,37)","rgb(68,1,84)"],"symbolSize":[2,60]},"calculable":true,"type":"continuous"}]},"options":[{"series":[{"data":[{"value":[120,-33,1,1]},{"value":[120,-32,1,1]},{"value":[140,-33,36,20]},{"value":[null,null,1,1]}]}]},{"series":[{"data":[{"value":[120,-34,1,1]},{"value":[120,-33,8,20]},{"value":[140,-33,4,9.14285714285714]}]}]},{"series":[{"data":[{"value":[120,-33,3,6.42857142857143]},{"value":[140,-35,1,1]},{"value":[140,-33,8,20]},{"value":[140,-30,4,9.14285714285714]}]}]},{"series":[{"data":[{"value":[120,-33,1,10.5]}]}]},{"series":[{"data":[{"value":[120,-33,4,1]},{"value":[140,-33,8,20]}]}]},{"series":[{"data":[{"value":[120,-33,3,20]},{"value":[140,-30,2,10.5]},{"value":[150,-35,1,1]},{"value":[null,null,1,1]}]}]},{"series":[{"data":[{"value":[120,-33,2,1]},{"value":[140,-33,2,1]},{"value":[null,null,3,20]}]}]},{"series":[{"data":[{"value":[120,-33,7,20]},{"value":[null,null,2,1]}]}]},{"series":[{"data":[{"value":[120,-33,13,20]},{"value":[140,-34,8,11.3636363636364]},{"value":[140,-33,2,1]}]}]},{"series":[{"data":[{"value":[120,-34,1,1]},{"value":[120,-33,9,9]},{"value":[140,-35,20,20]},{"value":[140,-34,16,16]},{"value":[140,-33,2,2]}]}]},{"series":[{"data":[{"value":[120,-33,4,1.34756097560976]},{"value":[130,-25,1,1]},{"value":[130,-23,3,1.23170731707317]},{"value":[140,-35,165,20]},{"value":[140,-34,1,1]},{"value":[140,-33,38,5.28658536585366]}]}]},{"series":[{"data":[{"value":[120,-34,1,1]},{"value":[120,-33,7,2.52]},{"value":[120,-32,1,1]},{"value":[140,-35,67,17.72]},{"value":[140,-34,5,2.01333333333333]},{"value":[140,-33,76,20]},{"value":[null,null,8,2.77333333333333]}]}]}],"visualMap":[]},"dispose":true},"evals":["opts.baseOption.series.0.symbolSize"],"jsHooks":[]}</script>
+</div>
+</div>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

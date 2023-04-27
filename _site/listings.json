@@ -2,21 +2,9 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/snow/index.html",
       "/posts/alone/index.html",
       "/posts/big-tech-stock/index.html"
-    ]
-  },
-  {
-    "listing": "/blog.html",
-    "items": [
-      "/posts/alone/index.html",
-      "/posts/big-tech-stock/index.html"
-    ]
-  },
-  {
-    "listing": "/apps.html",
-    "items": [
-      "/apps/index.html"
     ]
   },
   {

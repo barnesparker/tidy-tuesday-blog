@@ -1,10 +1,10 @@
 ---
-title: "Visualizing Alone Survivalists with {crosstalk} and {reactable}"
+title: "Exploring Alone Survivalists with {crosstalk} and {reactable}"
 author: "Parker Barnes"
 date: "2023-03-17"
 ---
 
-![](alone_dashboard.png)
+[![](alone_dashboard.png)](https://rpubs.com/barnesparker/alone)
 
 This is a super basic dashboard showcasing the data I explored in one of my recent blog posts. I mostly wanted to try out a few packages I had heard about but hadn't used before. {flexdashboard} lets you create dashboards using RMarkdown files, and does not require Shiny. {crosstalk} adds basic interaction between dashboard elements. Again, without using shiny. And finally, {reactable} is a package for creating interactive tables, and it allowed me to incorporate nested tables for the survivalists' items.
 

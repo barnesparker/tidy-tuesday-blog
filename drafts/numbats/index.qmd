@@ -1,0 +1,99 @@
+---
+title: "Spatial Temporal Visualization of Numbat Sightings"
+author: "Parker Barnes"
+date: "2023-03-21"
+format: 
+  html:
+    toc: true
+    code-fold: show
+---
+
+![](6d4beccdaa1b8fa884e57b2b5d7b28211438173e.webp)
+
+```{r setup}
+#| include: false
+
+ggplot2::theme_set(ggplot2::theme_bw())
+
+knitr::opts_chunk$set(
+  warning = F, message = F, echo = T
+)
+```
+
+```{r}
+library(tidyverse)
+library(echarts4r)
+library(echarts4r.maps)
+library(ggmap)
+library(leaflet)
+```
+
+In this post I will leverage some unique capabilities from the {echarts4r} package to visualize both spatial and temporal data at the same time. Normally, you would need more than 1 plot to accomplish this, but {echarts4r} has a nifty "timeline" feature that makes it effortless to combine the two.
+
+I will use the #tidytuesday [data set](https://github.com/rfordatascience/tidytuesday/blob/master/data/2023/2023-03-07/readme.md) from March 7, 2023. The data consists of sightings of the endangered Numbat, a carnivorous marsupial native to Australia. It's closest relative is the Tasmanian Devil. Sightings date back to 1856.
+
+```{r}
+numbats <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-03-07/numbats.csv')
+```
+
+First, let's explore where Numbats have been spotted without respect to any time variable.
+
+```{r}
+numbats |>
+  drop_na(month) |> 
+  leaflet() |>
+  addTiles() |> 
+  addCircleMarkers(
+    lng = ~decimalLongitude,
+    lat = ~decimalLatitude,
+    radius = 2
+  )
+```
+
+```{r}
+numbats |> 
+  drop_na(month) |> 
+  count(month = factor(month, levels = month.abb)) |>
+  ggplot(aes(month, n)) +
+  # geom_point() +
+  geom_col()
+```
+
+```{r}
+numbats |> 
+  drop_na(month) |> 
+  mutate(
+    decimalLongitude = signif(decimalLongitude, digits = 2),
+    decimalLatitude = signif(decimalLatitude, digits = 2)
+  ) |>
+  add_count(month, decimalLongitude, decimalLatitude) |>
+  distinct(month, decimalLatitude, decimalLongitude, .keep_all = T) |> 
+  group_by(month = factor(month, levels = month.abb)) |>
+  e_charts(
+    decimalLongitude,
+    timeline = T
+  ) |>
+  # e_leaflet() |> 
+  # e_leaflet_tile() |> 
+  e_geo(
+    roam = TRUE,
+    boundingCoords = list(
+      c(140, -10),
+      c(120, -40)
+    )
+  ) |>
+  e_scatter(
+    decimalLatitude, 
+    n,
+    coord_system = "geo",
+    symbol = "pin",
+  ) |> 
+  # e_labels() |>
+  e_timeline_opts(
+    axis_type = "category",
+    playInterval = 1000,
+    realtime = F
+  ) |>
+  e_animation(duration.update = 100, delay.update = 0) |> 
+  e_visual_map(min = 1, max = 20, inRange = list(color = c("rgb(253,231,37)", "rgb(68,1,84)"), symbolSize = c(2, 60)))
+```

@@ -8,7 +8,7 @@ format:
     code-fold: show
 ---
 
-![](alone.jpg)
+![](images/image-282544605.png)
 
 ## Introduction
 
@@ -43,6 +43,7 @@ data(seasons)
 
 glimpse(survivalists)
 ```
+
 `days_lasted` is the variable we are most interested in and the one we will try to predict. Furthermore, we aren't interested in any variable that isn't known at the start of the season (i.e. `reason_tapped_out`)
 
 ### Gender
@@ -63,6 +64,7 @@ survivalists |>
   coord_flip() +
   labs(x = NULL, y = "Days Lasted", fill = NULL)
 ```
+
 Women in this show appear to have a slight survival advantage.
 
 ### Location
@@ -193,7 +195,6 @@ survivalists |>
   theme(legend.position = "none")
 ```
 
-
 ## Machine Learning
 
 Let's build a model to predict survival time!
@@ -229,7 +230,6 @@ alone_clean <-
 ```{r}
 
 ```
-
 
 ### Train/Test Sets
 

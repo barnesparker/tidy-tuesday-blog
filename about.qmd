@@ -14,6 +14,8 @@ about:
       text: Github
       href: https://github.com/barnesparker
 
+website:
+  favicon: images/pb_profile.jpeg
 ---
 
 Data Scientist. R Enthusiast.
