@@ -40,7 +40,8 @@ box::use(
   ggplot2[...],
   lubridate[as_date, yday, today, month, mday],
   scales[label_date],
-  stringr[str_glue]
+  stringr[str_glue],
+  plotly
 )
 ```
 
@@ -219,6 +220,7 @@ create_snow_plot <- function(title = "Utah Snowpack", .interactive = T) {
   }
     
 }
+
 
 create_snow_plot(title = str_glue("Utah Snowpack as of {today()}"))
 

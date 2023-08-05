@@ -6,9 +6,12 @@ format:
   html:
     toc: true
     code-fold: show
+    
+params:
+  shortcut: "true"
 ---
 
-![](images/image-282544605.png)
+![](alone.jpg)
 
 ## Introduction
 
@@ -26,13 +29,14 @@ ggplot2::theme_set(ggplot2::theme_bw())
 knitr::opts_chunk$set(
   warning = F, message = F, echo = T
 )
+
 ```
 
 ## Data Exploration
 
 ### Data Ingest
 
-First let's import the data for our survivalists and the locations
+First let's import the data for our survivalists and the locations. I will be using the static data set from github since the package data changes over time and I want to avoid breaking any code.
 
 ```{r}
 library(tidyverse)
@@ -40,8 +44,31 @@ library(alone)
 
 data(survivalists)
 data(seasons)
+data(loadouts)
+
+# survivalists2 <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-01-24/survivalists.csv')
+# loadouts2 <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-01-24/loadouts.csv')
+# seasons2 <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-01-24/seasons.csv')
+
+survivalists <- 
+  survivalists |> 
+  filter(season <= 9, version == "US")
+  
+loadouts <- 
+  loadouts |> 
+  filter(season <= 9, version == "US")
+
+seasons <- 
+  seasons |> 
+  filter(season <= 9, version == "US")
 
 glimpse(survivalists)
+
+```
+
+```{r}
+#| include: false
+seasons <- seasons |> filter(location != "lutruwita / Tasmania")
 ```
 
 `days_lasted` is the variable we are most interested in and the one we will try to predict. Furthermore, we aren't interested in any variable that isn't known at the start of the season (i.e. `reason_tapped_out`)
@@ -118,7 +145,6 @@ There doesn't appear to be an age effect.
 Let's import one more data set that consists of the items the survivalists bring with them on the show.
 
 ```{r}
-data(loadouts)
 library(patchwork)
 
 ridges <- 
@@ -225,10 +251,14 @@ alone_clean <-
     name, season, age, gender, location, days_lasted, team, country, profession, repeat_attempt, 
     starts_with("item_")
   )
+
+
 ```
 
 ```{r}
-
+#| include: false
+alone_board <- pins::board_folder("alone_board", versioned = F)
+alone_board |> pins::pin_write(alone_clean, "alone_clean")
 ```
 
 ### Train/Test Sets
@@ -298,15 +328,15 @@ rf_grid <-
 
 ```{r}
 #| include: false
-alone_board <- pins::board_folder("alone_board")
+#| eval: !expr params$shortcut
 alone_res <- pins::pin_read(alone_board, "alone_res")
-alone_board |> pins::pin_write(alone_clean, "alone_clean")
-alone_prev <- pins::pin_read(pins::board_folder("alone_board"), "alone_res")
 
 ```
 
 ```{r}
-#| eval: false
+#| eval: !expr if_else(params$shortcut == "true", "false", params$shortcut)
+
+
 doParallel::registerDoParallel()
 
 alone_res <-
@@ -319,7 +349,7 @@ alone_res <-
 ```
 
 ```{r}
-#| eval: false
+#| eval: true
 #| include: false
 alone_board |> pins::pin_write(alone_res, "alone_res")
 ```

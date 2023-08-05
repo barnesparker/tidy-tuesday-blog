@@ -4,9 +4,6 @@ image: images/pb_profile.jpeg
 about:
   template: jolla
   links:
-    - icon: twitter
-      text: Twitter
-      href: https://twitter.com/paRkeRuser1
     - icon: linkedin
       text: LinkedIn
       href: https://www.linkedin.com/in/parker-barnes/

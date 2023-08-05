@@ -4,7 +4,7 @@ project:
 website:
   title: "Parker Barnes"
   navbar:
-  
+    background: primary
     left: 
       - href: index.qmd
         text: Blog
@@ -21,9 +21,9 @@ website:
         
 format:
   html:
-    theme: cosmo
-    css: styles.css
-    
+    theme:
+      light: cosmo
+      dark: [cosmo, theme-dark.scss]
     
 execute:
   freeze: auto

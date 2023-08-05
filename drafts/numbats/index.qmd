@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 ```{r}
 library(tidyverse)
 library(echarts4r)
-library(echarts4r.maps)
+# library(echarts4r.maps)
 library(ggmap)
 library(leaflet)
 ```
