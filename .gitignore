@@ -15,3 +15,5 @@ _freeze/posts/big-tech-stock/index/figure-html/unnamed-chunk-2-1.png
 *.png
 posts/drugs.R
 .Renviron
+/_site/
+posts/alone/alone_board
