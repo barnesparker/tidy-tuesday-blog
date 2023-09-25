@@ -1,0 +1,414 @@
+---
+title: "Visualizing NFL Game Attendance (Part 1)"
+author: "Parker Barnes"
+date: "2023-09-25"
+execute: 
+  warning: false
+  error: false
+format: 
+  html:
+    toc: true
+    code-fold: show
+---
+
+[![Photo by Anders Krøgh Jørgensen on Unsplash](nfl.jpg){fig-align="center"}](https://unsplash.com/@anders_kj1?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
+
+In part 1 of this 2-part blog post we will be visualizing potential factors that drive NFL game attendance. The data come from a [#TidyTuesday data set](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-02-04/readme.md) from 2020 which consists of game attendance data between the year 2000 and 2019. I also managed to track down [another data set](https://www.kaggle.com/datasets/tobycrabtree/nfl-scores-and-betting-data?select=spreadspoke_scores.csv) from Kaggle that includes useful data about stadiums and weather.
+
+## Data Import
+
+First, we will import the data. For simplicity, we will only be looking at regular season games.
+
+```{r setup}
+library(tidyverse)
+theme_set(theme_bw()) # make all our plots look a little nicer
+```
+
+```{r}
+attendance <-
+  read_csv(
+    "https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-02-04/attendance.csv",
+    col_select = c(team, team_name, year, week, weekly_attendance)
+  ) |>
+  drop_na(weekly_attendance) # remove bye weeks
+
+conferences <-
+  read_csv(
+    "nfl_teams.csv",
+    col_select = c(team_name, conference = team_conference)
+  )
+
+games <-
+  read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-02-04/games.csv") |>
+  # fixing error in the data
+  rows_update(
+    tibble(
+      year = 2005,
+      week = "2",
+      winner = "New York Giants",
+      home_team = "New York Giants",
+      away_team = "New Orleans Saints"
+    ),
+    by = c("year", "week", "winner")
+  )
+
+game_details <-
+  read_csv(
+    "spreadspoke_scores.csv",
+    col_select = c(
+      week = schedule_week, year = schedule_season,
+      home_team = team_home, away_team = team_away, stadium,
+      weather_temperature # select the few columns I need
+    )
+  )
+
+games <-
+  games |>
+  left_join(game_details) |>
+  mutate(week = as.numeric(week)) |> # non-regular weeks are not numeric and get converted to NA
+  drop_na(week) # drop non-regular games
+
+
+stadiums <-
+  read_csv(
+    "nfl_stadiums.csv",
+    col_select = c(
+      stadium = stadium_name, stadium_capacity, stadium_latitude,
+      stadium_longitude, stadium_address, stadium_open
+    )
+  ) |>
+  mutate(
+    stadium_id = cur_group_id(), # Some stadiums were renamed at various points. We want to group those together
+    .by = c(stadium_address, stadium_open),
+    .before = 1
+  ) |>
+  select(-stadium_address, stadium_open)
+
+
+
+games |> glimpse()
+attendance |> glimpse()
+stadiums |> glimpse()
+```
+
+These tibbles contain fairly basic info about each game. including who was playing, who won, which stadium the game was at, and most importantly, the game attendance. For this analysis, game statistics such as points scored are largely irrelevant since game attendance is determined at the beginning of game. That being said, **past** performance might be indicative of future attendance which we will explore later.
+
+## Data Transformation
+
+Since the `attendance` tibble doesn't contain information about which team is home or away, we'll need to join it with the `games` tibble based on `team`, `year`, and `week`. This appears trivial at first, but actually requires us to pivot the `games` tibble in order to create a single column for team name that we can join with `attendance`.
+
+```{r}
+# select variables of interest from attendance
+attendance_simple <-
+  attendance |>
+  mutate(team_name = paste(team, team_name)) |>
+  select(week, year, team_name, weekly_attendance)
+
+# determine loser and select variables of interest
+games_long <-
+  games |>
+  mutate(
+    loser = if_else(winner == home_team, away_team, home_team)
+  ) |>
+  pivot_longer(c(home_team, away_team), names_to = "home_away", values_to = "team_name") |>
+  select(team_name, home_away, winner, loser, week, year)
+
+
+
+attendance_joined <-
+  attendance_simple |>
+  inner_join(games_long) |>
+  inner_join(conferences) |>
+  arrange(team_name, year, week)
+
+attendance_joined |>
+  glimpse()
+```
+
+Now that we've joined attendance and games together, we need to pivot back to "wide" format to achieve "tidyness". Before we do that, let's calculate win streak and lose streaks for each team at the time of the match up. To do this we will use the `rle` function, which calculates **r**un **l**ength **e**ncodings of equal values in a vector. This solution admittedly feels kinda hacky since it's not a traditional `tidyverse` function, but it's the best way I could find. Please let me know if you know of a better way!
+
+```{r}
+streaks <-
+  attendance_joined |>
+  group_by(
+    team_name,
+    winner_grp = with(rle(winner), rep(seq_along(lengths), lengths))
+  ) |>
+  mutate(
+    win_streak = seq_along(winner_grp) - 1,
+  ) |>
+  group_by(
+    team_name,
+    loser_grp = with(rle(loser), rep(seq_along(lengths), lengths))
+  ) |>
+  mutate(
+    lose_streak = seq_along(loser_grp) - 1
+  ) |>
+  ungroup() |>
+  select(-winner_grp, -loser_grp) |>
+  pivot_wider(
+    names_from = home_away,
+    values_from = c(team_name, win_streak, lose_streak, conference)
+  ) |>
+  rename(
+    away_team = team_name_away_team,
+    home_team = team_name_home_team
+  )
+```
+
+To finish off our tidy data set, we will join in the stadium and temperature data.
+
+```{r}
+nfl_tidy <-
+  streaks |>
+  left_join(
+    games |>
+      select(week, year, home_team, away_team, stadium, weather_temperature)
+  ) |>
+  left_join(stadiums) |>
+  # rename all stadiums to what they are currently named
+  mutate(stadium = stadium[which.max(year)], .by = stadium_id)
+
+nfl_tidy |> glimpse()
+```
+
+## Visualization
+
+### Attendance Overview
+
+Let's first get an idea of how game attendance looks overall
+
+```{r}
+nfl_tidy |>
+  ggplot(aes(weekly_attendance)) +
+  geom_histogram() +
+  scale_x_continuous(labels = scales::label_comma(), n.breaks = 10) +
+  labs(
+    x = "Attendance"
+  )
+```
+
+Attendance looks fairly normally distributed, averaging around 70,000 people
+
+Let's look at attendance by year and by week
+
+```{r}
+nfl_tidy |>
+  ggplot(aes(x = weekly_attendance, y = fct_rev(factor(year)))) +
+  geom_boxplot() +
+  scale_x_continuous(labels = scales::label_comma(), n.breaks = 10) +
+  labs(
+    x = "Attendance",
+    y = NULL
+  )
+```
+
+Attendance over the last 20 years is fairly stable, with perhaps a gradual increase over time.
+
+```{r}
+nfl_tidy |>
+  ggplot(aes(x = weekly_attendance, y = fct_rev(factor(week)))) +
+  geom_boxplot() +
+  scale_x_continuous(labels = scales::label_comma(), n.breaks = 10) +
+  labs(
+    x = "Attendance",
+    y = "Week"
+  )
+```
+
+Attendance across the season looks very stable as well.
+
+### Home Team
+
+Let's explore what is probably the biggest factor in game attendance: Home Team
+
+```{r}
+# create function since we will make this plot a few times
+attendance_boxplots <- function(data, x, y, fill, n.breaks = 9, labels = scales::label_comma()) {
+  data |>
+    ggplot(aes({{ x }}, {{ y }}, fill = {{ fill }})) +
+    geom_boxplot() +
+    scale_x_continuous(labels = labels, n.breaks = n.breaks) +
+    expand_limits(x = 0) +
+    labs(
+      y = NULL,
+      x = "Attendance",
+      fill = "Conference"
+    ) +
+    theme(legend.position = "bottom")
+}
+```
+
+```{r fig.height=6, fig.width=6}
+nfl_tidy |>
+  mutate(
+    med_attendance = median(weekly_attendance),
+    .by = home_team
+  ) |>
+  mutate(home_team = fct_reorder(word(home_team, -1), med_attendance)) |> # reorder by median attendance
+  attendance_boxplots(weekly_attendance, home_team, conference_home_team) +
+  ylab("Home Team")
+```
+
+This gives us view into team popularity, but we also need to take into account a glaring confounding variable - stadium capacity.
+
+### Stadium Capacity
+
+Let's now visualize attendance as a percent of stadium capacity.
+
+```{r fig.height=6, fig.width=6}
+nfl_tidy |>
+  mutate(
+    prop_capacity = weekly_attendance / stadium_capacity
+  ) |>
+  mutate(
+    med_prop_capacity = median(prop_capacity, na.rm = T),
+    .by = home_team
+  ) |>
+  mutate(home_team = fct_reorder(word(home_team, -1), med_prop_capacity)) |> # reorder by median attendance
+  attendance_boxplots(prop_capacity, home_team, conference_home_team, labels = scales::label_percent()) +
+  ylab("Home Team")
+```
+
+A few things we learn from this chart:
+
+1.  Stadiums regularly fill to above capacity
+
+2.  While the cowboys still dominate in this regard, unexpected teams such as the Raiders jumped from dead last in terms of nominal attendance to near the top in percent capacity filled. This confirms our suspicion that stadium size plays a part in game attendance.
+
+### Away Team
+
+One last related variable we will explore that will reveal some insight is how the away team affects attendance. This stat is not biased by stadium size since away teams play across many stadiums, and may reveal patterns about how widespread a team's fans are across the country.
+
+```{r fig.height=6, fig.width=6}
+nfl_tidy |>
+  mutate(
+    med_attendance = median(weekly_attendance),
+    .by = away_team
+  ) |>
+  mutate(away_team = fct_reorder(word(away_team, -1), med_attendance)) |> # reorder by median attendance
+
+  attendance_boxplots(weekly_attendance, away_team, conference_away_team) +
+  ylab("Away Team")
+```
+
+Not unsurprisingly, away teams do not have as much of an affect on attendance as home teams. Nonetheless, It makes sense that the Patriots are a team that many people across the country enjoy seeing their home team play, regardless of whether they love or hate them.
+
+<!-- Let's quickly visualize how the teams faired on the previous 3 visualizations: -->
+
+```{r}
+#| include: false
+# nfl_tidy |>
+#   mutate(
+#     med_home_attendance = median(weekly_attendance),
+#     .by = home_team
+#   ) |>
+#   mutate(
+#     med_away_attendance = median(weekly_attendance),
+#     .by = away_team
+#   ) |>
+#   mutate(
+#     prop_capacity = weekly_attendance / stadium_capacity
+#   ) |>
+#   mutate(
+#     med_prop_capacity = median(prop_capacity, na.rm = T),
+#     .by = home_team
+#   ) |>
+#   distinct()
+#   summarise(
+#     home_rank = rank(med_home_attendance),
+#     away_rank = rank(med_away_attendance),
+#     perc_capacity_rank = rank(med_prop_capacity),
+#     .by = home_team
+#   )
+```
+
+### Distance Between Teams
+
+Let's focus more on a logistical variable: Distance between teams. We might hypothesize that teams further away from each other have smaller attendances.
+
+```{r}
+# Create tibble of team location coordinates
+team_locations <-
+  nfl_tidy |>
+  # add in number of times played at each stadium per season
+  add_count(home_team, year, stadium) |>
+  # replace stadium with stadium they played at the most that year
+  mutate(stadium = stadium[which.max(n)], .by = c(home_team, year)) |>
+  distinct(year, team = home_team, stadium) |>
+  left_join(
+    stadiums |>
+      select(stadium, stadium_latitude, stadium_longitude)
+  )
+
+# join in team locations twice - once for home team and once for away team
+nfl_tidy_with_distances <-
+  nfl_tidy |>
+  left_join(
+    team_locations |>
+      select(home_team = team, year, home_team_latitude = stadium_latitude, home_team_longitude = stadium_longitude)
+  ) |>
+  left_join(
+    team_locations |>
+      select(away_team = team, year, away_team_latitude = stadium_latitude, away_team_longitude = stadium_longitude)
+  ) |>
+  rowwise() |>
+  # use haversine formula to calculate distance and convert to miles
+  mutate(distance_between_teams = geosphere::distHaversine(c(home_team_longitude, home_team_latitude), c(away_team_longitude, away_team_latitude)) / 1609)
+```
+
+```{r}
+nfl_tidy_with_distances |>
+  mutate(same_conference = conference_home_team == conference_away_team) |>
+  ggplot(aes(distance_between_teams, weekly_attendance)) +
+  geom_point(aes(color = same_conference), alpha = .8) +
+  geom_smooth() +
+  expand_limits(x = 0, y = 0) +
+  scale_y_continuous(labels = scales::label_comma(), n.breaks = 10) +
+  scale_x_continuous(labels = scales::label_comma(), n.breaks = 10) +
+  labs(
+    x = "Distance between Teams (mi)",
+    y = "Attendance",
+    color = "Same Conference"
+  )
+```
+
+At a glance, there doesn't appear to be a strong association between distance between teams and attendance, but we won't write it off since there are so many confounding variables that are baked into the data.
+
+### Winning/Losing Streaks
+
+The last association we'll look at is how past team performance affects attendance. It seems likely that if a home team is on a long winning streak, their fans might be more enthusiastic about attending games. The reverse might also be true about losing streaks, so we will visualize that too.
+
+In order to accomplish this, we will combine winning and losing streaks into a single variable where positive values indicate a winning streak and negative values indicate a losing streak.
+
+```{r}
+nfl_tidy |>
+  mutate(
+    streak_home_team = if_else(win_streak_home_team == 0, lose_streak_home_team * -1, win_streak_home_team),
+    streak_away_team = if_else(win_streak_away_team == 0, lose_streak_away_team * -1, win_streak_away_team)
+  ) |>
+  pivot_longer(
+    c(streak_home_team, streak_away_team),
+    names_to = "streak_type",
+    values_to = "streak"
+  ) |>
+  mutate(streak_type = snakecase::to_title_case(streak_type)) |>
+  ggplot(aes(streak, weekly_attendance, color = streak_type)) +
+  geom_point() +
+  geom_smooth() +
+  expand_limits(y = 0) +
+  scale_y_continuous(labels = scales::label_comma(), n.breaks = 10) +
+  labs(
+    color = NULL,
+    y = "Attendance",
+    x = "Streak"
+  )
+```
+
+Again, we only see mild effect on attendance, with perhaps a slightly higher affect for home team streaks. However, as with before we won't write this off completely since there are so many within-group interactions happening which are difficult to visualize.
+
+## Up Next
+
+I've selected just a few different ways to visualize these data but there are undoubtedly countless more ways. I would love to hear more ideas from you about how to visualize the data!
+
+In part 2 of this analysis I will dive into some modeling techniques so we can assess once and for all if these variables do in fact contribute to game attendance. As we learned throughout this post, there are some prominent within-group effects at play and we will be sure to address those in the model development process. Stay tuned!
