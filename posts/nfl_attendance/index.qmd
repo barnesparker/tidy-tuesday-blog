@@ -13,16 +13,18 @@ format:
 
 [![Photo by Anders Krøgh Jørgensen on Unsplash](nfl.jpg){fig-align="center"}](https://unsplash.com/@anders_kj1?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
 
-In part 1 of this 2-part blog post we will be visualizing potential factors that drive NFL game attendance. The data come from a [#TidyTuesday data set](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-02-04/readme.md) from 2020 which consists of game attendance data between the year 2000 and 2019. I also managed to track down [another data set](https://www.kaggle.com/datasets/tobycrabtree/nfl-scores-and-betting-data?select=spreadspoke_scores.csv) from Kaggle that includes useful data about stadiums and weather.
+In part 1 of this 2-part blog post we will be visualizing potential factors that drive NFL game attendance. The data come from a [#TidyTuesday data set](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-02-04/readme.md) from 2020 which consists of game attendance data between the years 2000 and 2019. I also managed to track down [another data set](https://www.kaggle.com/datasets/tobycrabtree/nfl-scores-and-betting-data?select=spreadspoke_scores.csv) from Kaggle that includes useful data about stadiums and weather.
 
 ## Data Import
 
-First, we will import the data. For simplicity, we will only be looking at regular season games.
+We start off by loading the tidyverse and importing the data. In this analysis, we will only be looking at regular season games.
 
 ```{r setup}
-library(tidyverse)
+library(tidyverse) # loads all our favorite data analysis packages
 theme_set(theme_bw()) # make all our plots look a little nicer
 ```
+
+### Attendance
 
 ```{r}
 attendance <-
@@ -32,6 +34,13 @@ attendance <-
   ) |>
   drop_na(weekly_attendance) # remove bye weeks
 
+attendance |> glimpse()
+
+```
+
+### Games
+
+```{r}
 conferences <-
   read_csv(
     "nfl_teams.csv",
@@ -68,13 +77,20 @@ games <-
   mutate(week = as.numeric(week)) |> # non-regular weeks are not numeric and get converted to NA
   drop_na(week) # drop non-regular games
 
+games |> glimpse()
+
+```
+
+### Stadiums
+
+```{r}
 
 stadiums <-
   read_csv(
-    "nfl_stadiums.csv",
+     "nfl_stadiums.csv",
     col_select = c(
-      stadium = stadium_name, stadium_capacity, stadium_latitude,
-      stadium_longitude, stadium_address, stadium_open
+     stadium = stadium_name, stadium_capacity, stadium_latitude,
+     stadium_longitude, stadium_address, stadium_open, stadium_type
     )
   ) |>
   mutate(
@@ -84,10 +100,6 @@ stadiums <-
   ) |>
   select(-stadium_address, stadium_open)
 
-
-
-games |> glimpse()
-attendance |> glimpse()
 stadiums |> glimpse()
 ```
 
@@ -374,6 +386,30 @@ nfl_tidy_with_distances |>
 ```
 
 At a glance, there doesn't appear to be a strong association between distance between teams and attendance, but we won't write it off since there are so many confounding variables that are baked into the data.
+
+### Temperature
+
+How sensitive are fans are about outside temperature? Let's visualize it against temperature and make sure to include the stadium type.
+
+```{r}
+nfl_tidy |> 
+  drop_na(stadium_type) |> 
+  ggplot(aes(weather_temperature, weekly_attendance)) + 
+  geom_point(aes(color = stadium_type), alpha = .7, show.legend = F) +
+  geom_smooth() +
+  expand_limits(x = 0, y = 0) +
+  scale_y_continuous(labels = scales::label_comma(), n.breaks = 10) +
+  facet_wrap(~stadium_type, labeller = "label_both") +
+  labs(
+    x = "Temperature (F)",
+    y = "Attendance"
+  )
+```
+
+A few things we learn from this chart:
+
+1.  I mistakenly believed the temperature data always recorded outside the stadiums
+2.  There is weak evidence that hotter temperatures lead to lower attendance.
 
 ### Winning/Losing Streaks
 
