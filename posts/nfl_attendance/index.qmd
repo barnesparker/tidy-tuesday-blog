@@ -389,7 +389,7 @@ At a glance, there doesn't appear to be a strong association between distance be
 
 ### Temperature
 
-How sensitive are fans are about outside temperature? Let's visualize it against temperature and make sure to include the stadium type.
+How sensitive are fans are about outside temperature? This could be interesting considering there are some stadiums that have retractable ceilings
 
 ```{r}
 nfl_tidy |> 
