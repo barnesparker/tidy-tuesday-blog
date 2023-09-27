@@ -9,7 +9,7 @@ website:
       - href: index.qmd
         text: Blog
       - href: projects.qmd
-        text: Projects
+        text: Shiny Apps
       - href: resume.qmd
         text: Resume
   
@@ -17,7 +17,7 @@ website:
     right:
       - about.qmd
       - icon: github
-        href: https://github.com/barnesparker
+        href: https://github.com/barnesparker/tidy-tuesday-blog
         
 format:
   html:

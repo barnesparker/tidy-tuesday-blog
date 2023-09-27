@@ -15,4 +15,24 @@ website:
   favicon: images/pb_profile.jpeg
 ---
 
-Data Scientist. R Enthusiast.
+Hello! My name is Parker and I'm a data scientist and tidyverse enthusiast. I firmly believe that R has the greatest potential for clean, efficient, and reproducible data science. I hope that this blog is a testament to that.
+
+My blog consists of short analyses of diverse data sets. Each article is very code/visualization heavy but I give explanations and commentary along the way. The idea is to clearly explain my thought process in analyzing the data so that you can understand without having to know what each line of code does.
+
+## My Story
+
+My journey to data science began when I enrolled in AP Statistics my Senior year of High School. My teacher also happened to be my track and cross country Coach whom I respected very much. Let's just say he taught the same way he coached, which was extremely analytically and data driven. His teaching and training philosophy, coupled with the concepts themselves, taught me that disciplined data analysis can lead to remarkable results.
+
+With this mentality in mind, I began my Freshman year as a Statistics major at Brigham Young University. My first class was an intro to Bayesian course, where I was introduced to a whole new statistical paradigm, as well as a peculiar statistical programming language called R. It was my first experience coding in any language, and so initially I was quite turned off, especially since we were taught explicitly base R. During this time, I was also enrolled in an introductory Computer Science course where I learned C++, a much more disciplined language. I decided to switch my major to CS and continued to learn C++ and Java for the next 3 semesters.
+
+My passion for statistics and renewed interest in the field of data science caused me to switch away from Computer Science into a rigorous computational math program where python was the main language. After completing all the pre-requisites, I learned that abstract proofs were not my cup of tea and I quickly switched out of the program. I finally circled back to Statistics.
+
+At this point however, I was all in on python, having completed an entire internship in python. That began to change when I was once again writing R code for my statistics courses. Having been exposed to several programming languages at this point, I picked up R much more quickly and didn't mind the strange syntax as much. I was also introduced to a package called '`ggplot2`' which provided a new plotting interface supposedly more powerful than the base R plotting library.
+
+It wasn't until I took a class taught by James Blair, then a solutions engineer at RStudio (now Posit), that I realized the full potential of R and the tidyverse. James was a wizard with dplyr and showed us how to elegantly wrangle any data set. The code was infinitely more readable than anything I'd seen in python. Another fascinating class I took was machine learning where I was further introduced to the `caret` package. This I discovered was an analog to Scikit-Learn in python but felt more rigorous and statistically disciplined.
+
+Since graduating from BYU, I've gone on to work several data analyst and scientist roles, and I attained a Master's Degree in Business Analytics along the way. Through each of these experiences, I've picked up some new skills, and refined others. I've yet to come across an instance where R couldn't accomplish what python could in a more comprehensible way, with the exception of some highly technical data engineering tasks.
+
+If there's one thing that I've learned that I want to pass along to any aspiring or current data professional, it's to take the computer science aspect of data science seriously. That means writing functions intelligently, naming variables appropriately, and organizing your workflows logically. Whatever language you choose to specialize in (and I would recommend specializing in one of them), make sure you adhere to that language's best practices and lean into its strengths rather than treating it as just another tool to produce a result.
+
+Thanks for reading my story and please reach out if you'd like to connect about anything!
