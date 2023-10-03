@@ -13,7 +13,7 @@ format:
 
 [![Photo by Anders Krøgh Jørgensen on Unsplash](nfl.jpg){fig-align="center"}](https://unsplash.com/@anders_kj1?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
 
-In part 1 of this 2-part blog post we will be visualizing potential factors that drive NFL game attendance. The data come from a [#TidyTuesday data set](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-02-04/readme.md) from 2020 which consists of game attendance data between the years 2000 and 2019. I also managed to track down [another data set](https://www.kaggle.com/datasets/tobycrabtree/nfl-scores-and-betting-data?select=spreadspoke_scores.csv) from Kaggle that includes useful data about stadiums and weather.
+In part 1 of this 2-part blog post we will visualize potential factors that drive NFL game attendance. The data come from a [#TidyTuesday data set](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-02-04/readme.md) from 2020 which consists of game attendance data between the years 2000 and 2019. I also managed to track down [another data set](https://www.kaggle.com/datasets/tobycrabtree/nfl-scores-and-betting-data?select=spreadspoke_scores.csv) from Kaggle that includes useful data about stadiums and weather.
 
 ## Data Import
 
@@ -179,10 +179,16 @@ nfl_tidy <-
   ) |>
   left_join(stadiums) |>
   # rename all stadiums to what they are currently named
-  mutate(stadium = stadium[which.max(year)], .by = stadium_id)
+  mutate(
+    stadium = stadium[which.max(year)], .by = stadium_id
+  ) |> 
+  mutate(
+    game_id = row_number() # create game id for convenience later on
+  )
 
 nfl_tidy |> glimpse()
 ```
+
 
 ## Visualization
 
@@ -418,11 +424,14 @@ The last association we'll look at is how past team performance affects attendan
 In order to accomplish this, we will combine winning and losing streaks into a single variable where positive values indicate a winning streak and negative values indicate a losing streak.
 
 ```{r}
-nfl_tidy |>
+nfl_streaks_simplified <- 
+  nfl_tidy |>
   mutate(
     streak_home_team = if_else(win_streak_home_team == 0, lose_streak_home_team * -1, win_streak_home_team),
     streak_away_team = if_else(win_streak_away_team == 0, lose_streak_away_team * -1, win_streak_away_team)
-  ) |>
+  )
+
+nfl_streaks_simplified |> 
   pivot_longer(
     c(streak_home_team, streak_away_team),
     names_to = "streak_type",
@@ -447,4 +456,30 @@ Again, we only see mild effect on attendance, with perhaps a slightly higher aff
 
 I've selected just a few different ways to visualize these data but there are undoubtedly countless more ways. I would love to hear more ideas from you about how to visualize the data!
 
-In part 2 of this analysis I will dive into some modeling techniques so we can assess once and for all if these variables do in fact contribute to game attendance. As we learned throughout this post, there are some prominent within-group effects at play and we will be sure to address those in the model development process. Stay tuned!
+In part 2 of this analysis I will dive into some modeling techniques so we can assess more definitively assess the effect these variables have on game attendance. As we learned throughout this post, there are some prominent within-group effects at play and we will be sure to address those in the model development process.
+
+Before ending, let's pin our tidy data to a local versioned board, so that we can read it in Part 2, as well as keep track of any changes we might make to the data in this part.
+
+```{r}
+nfl_board <- pins::board_folder(here::here("cleaned_data"), versioned = T)
+nfl_tidy_final <- 
+  nfl_tidy |> 
+  left_join(
+    nfl_streaks_simplified |> 
+      select(game_id, streak_home_team, streak_away_team)
+  ) |> 
+  left_join(
+    nfl_tidy_with_distances |> 
+      select(game_id, distance_between_teams)
+  ) |> 
+  select(-contains("_streak_")) # remove old streak variables
+
+
+nfl_board |> 
+  pins::pin_write(
+    nfl_tidy_final, 
+    name = "nfl_tidy",
+    title = "Tidy NFL Attendance Data", 
+    description = "NFL Attendance data with one row per game. Includes other variables; some derived and some pulled directly from other data sets"
+  )
+```
