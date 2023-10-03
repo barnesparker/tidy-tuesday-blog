@@ -1,0 +1,58 @@
+---
+title: "Modeling NFL Game Attendance (Part 2)"
+author: "Parker Barnes"
+date: "2023-10-04"
+execute: 
+  warning: false
+  error: false
+format: 
+  html:
+    toc: true
+    code-fold: show
+---
+
+
+Welcome to Part 2 of my NFL Game Attendance Analysis. In Part 1, we visualized the relationships between game attendance and a variety of factors including home team, temperature, and win/lose streaks. In this post, we will treat these as predictors in a modelling approach.
+
+```{r}
+library(tidyverse)
+```
+
+## Train/Test Split
+
+First we will read in our tidy data from Part 1.
+
+```{r}
+nfl_board <- pins::board_folder(here::here("cleaned_data"))
+
+nfl_tidy <- 
+  nfl_board |> 
+  pins::pin_read("nfl_tidy")
+
+nfl_tidy |> glimpse()
+
+```
+
+
+Let's begin by create training and testing splits. We will be using functions from the amazing `tidymodels` package.
+
+```{r}
+library(tidymodels)
+nfl_split <- initial_split(nfl_tidy, strata = weekly_attendance)
+# nfl_train <- training(nfl_split)
+# nfl_test <- testing(nfl_split)
+nfl_split
+```
+
+We'll also create resampling folds from the training data for cross validation
+
+```{r}
+nfl_resamples <- vfold_cv(training(nfl_split), strata = weekly_attendance)
+nfl_resamples
+```
+## Preprocessing
+
+
+
+
+
