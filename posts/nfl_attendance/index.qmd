@@ -1,5 +1,5 @@
 ---
-title: "Visualizing NFL Game Attendance (Part 1)"
+title: "Visualizing NFL Game Attendance"
 author: "Parker Barnes"
 date: "2023-09-25"
 execute: 
@@ -13,7 +13,7 @@ format:
 
 [![Photo by Anders Krøgh Jørgensen on Unsplash](nfl.jpg){fig-align="center"}](https://unsplash.com/@anders_kj1?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
 
-In part 1 of this 2-part blog post we will be visualizing potential factors that drive NFL game attendance. The data come from a [#TidyTuesday data set](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-02-04/readme.md) from 2020 which consists of game attendance data between the years 2000 and 2019. I also managed to track down [another data set](https://www.kaggle.com/datasets/tobycrabtree/nfl-scores-and-betting-data?select=spreadspoke_scores.csv) from Kaggle that includes useful data about stadiums and weather.
+In this blog post we will be visualizing potential factors that drive NFL game attendance. The data come from a [#TidyTuesday data set](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-02-04/readme.md) from 2020 which consists of game attendance data between the years 2000 and 2019. I also managed to track down [another data set](https://www.kaggle.com/datasets/tobycrabtree/nfl-scores-and-betting-data?select=spreadspoke_scores.csv) from Kaggle that includes useful data about stadiums and weather.
 
 ## Data Import
 
@@ -446,5 +446,3 @@ Again, we only see mild effect on attendance, with perhaps a slightly higher aff
 ## Up Next
 
 I've selected just a few different ways to visualize these data but there are undoubtedly countless more ways. I would love to hear more ideas from you about how to visualize the data!
-
-In part 2 of this analysis I will dive into some modeling techniques so we can assess once and for all if these variables do in fact contribute to game attendance. As we learned throughout this post, there are some prominent within-group effects at play and we will be sure to address those in the model development process. Stay tuned!
